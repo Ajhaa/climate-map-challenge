@@ -1,18 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import Metolib from '@fmidev/metolib';
 import './App.css';
-import {Map, Marker, TileLayer, Popup} from "react-leaflet";
-import styled from "styled-components";
 import L from "leaflet";
-import Sidebar from './Sidebar';
-
-const MapContainer = styled(Map)`
-    width: 100%;
-    height: 100vh;
-    position:absolute;
-    top:0px;
-    left:0px;
-`;
+import Sidebar from './components/Sidebar';
+import Map from './components/Map';
 
 
 // Ugly hack to fix Leaflet icons with leaflet loaders
@@ -67,35 +58,20 @@ function App() {
     }
   }, []);
 
-  const loc = observationLocations.find(loc => loc.info.id === selectedLocation);
-
-
   const position = [65, 26];
-  const map = (
-    <MapContainer style={mapStyle} center={position} zoom={6}>
-      <TileLayer
-        url='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        subdomains='abcd'
-        maxZoom={19}
-      />
-      {observationLocations.map(loc => <Marker position={[loc.position.lon, loc.position.lat]}
-                                               key={loc.info.id} onClick={() => setSelectedLocation(loc.info.id)}>
-                                              <Popup>
-                                                <p>{loc.info.name}, {loc.info.region}</p>
-                                                <p>temperature: {loc.data.t.timeValuePairs[loc.data.t.timeValuePairs.length-1].value}°C</p>
-                                                <p><a onClick={() =>setShowSidebar(true)}>more info</a></p>
-                                              </Popup>
-      </Marker>)}
-    </MapContainer>
-  );
-
-
 
   return (
     <div className="App">
-      {map}
-      <Sidebar setSelected={setShowSidebar} selectedLocationId={selectedLocation} observationLocations={observationLocations}/>
+      <Map mapStyle={mapStyle}
+           position={position}
+           locations={observationLocations}
+           setSelectedLocation={setSelectedLocation}
+           setShowSidebar={setShowSidebar}
+      />
+      <Sidebar setSelected={setShowSidebar}
+               selectedLocationId={selectedLocation}
+               observationLocations={observationLocations}
+      />
     </div>
   );
 
