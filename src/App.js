@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import Metolib from '@fmidev/metolib';
 import './App.css';
-import {Map, Marker, TileLayer} from "react-leaflet";
+import {Map, Marker, TileLayer, Popup} from "react-leaflet";
 import styled from "styled-components";
 import L from "leaflet";
 import Sidebar from './Sidebar';
 
 const MapContainer = styled(Map)`
-    width: calc(100vw - 300px);
+    width: 100%;
     height: 100vh;
     position:absolute;
     top:0px;
-    left:300px;
+    left:0px;
 `;
 
 
@@ -28,6 +28,13 @@ function App() {
   const [observationLocations, setObservationLocations] = useState([]);
 
   const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const mapStyle = {
+    width: showSidebar ? 'calc(100vw - 300px)' : '100%',
+    left: showSidebar ? '300px' : '0px'
+  };
 
   useEffect(function fetchObservationLocations() {
     const connection = new Metolib.WfsConnection();
@@ -60,10 +67,12 @@ function App() {
     }
   }, []);
 
+  const loc = observationLocations.find(loc => loc.info.id === selectedLocation);
+
 
   const position = [65, 26];
   const map = (
-    <MapContainer center={position} zoom={6}>
+    <MapContainer style={mapStyle} center={position} zoom={6}>
       <TileLayer
         url='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -72,14 +81,21 @@ function App() {
       />
       {observationLocations.map(loc => <Marker position={[loc.position.lon, loc.position.lat]}
                                                key={loc.info.id} onClick={() => setSelectedLocation(loc.info.id)}>
+                                              <Popup>
+                                                <p>{loc.info.name}, {loc.info.region}</p>
+                                                <p>temperature: {loc.data.t.timeValuePairs[loc.data.t.timeValuePairs.length-1].value}°C</p>
+                                                <p><a onClick={() =>setShowSidebar(true)}>more info</a></p>
+                                              </Popup>
       </Marker>)}
     </MapContainer>
   );
 
+
+
   return (
     <div className="App">
-      <Sidebar selectedLocationId={selectedLocation} observationLocations={observationLocations}/>
       {map}
+      <Sidebar setSelected={setShowSidebar} selectedLocationId={selectedLocation} observationLocations={observationLocations}/>
     </div>
   );
 
