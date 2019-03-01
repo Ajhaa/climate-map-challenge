@@ -60,6 +60,7 @@ function App() {
     }
   }, []);
 
+
   const position = [65, 26];
   const map = (
     <MapContainer center={position} zoom={6}>
@@ -69,7 +70,7 @@ function App() {
         subdomains='abcd'
         maxZoom={19}
       />
-      {observationLocations.map(loc => <Marker position={[loc.position.lat, loc.position.lon]}
+      {observationLocations.map(loc => <Marker position={[loc.position.lon, loc.position.lat]}
                                                key={loc.info.id} onClick={() => setSelectedLocation(loc.info.id)}>
       </Marker>)}
     </MapContainer>
