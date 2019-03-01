@@ -20,7 +20,14 @@ const Map = ({mapStyle, position, locations, setSelectedLocation, setShowSidebar
       subdomains='abcd'
       maxZoom={19}
     />
-    {locations.map(loc => <GeoMarker loc={loc} setSelectedLocation={setSelectedLocation} setShowSidebar={setShowSidebar}/>)}
+    {locations.map(loc => 
+      <GeoMarker
+        key={loc.info.id} 
+        loc={loc} 
+        setSelectedLocation={setSelectedLocation} 
+        setShowSidebar={setShowSidebar}
+      />
+    )}
   </MapContainer>
 );
 

@@ -62,15 +62,17 @@ function App() {
 
   return (
     <div className="App">
-      <Map mapStyle={mapStyle}
-           position={position}
-           locations={observationLocations}
-           setSelectedLocation={setSelectedLocation}
-           setShowSidebar={setShowSidebar}
+      <Map 
+        mapStyle={mapStyle}
+        position={position}
+        locations={observationLocations}
+        setSelectedLocation={setSelectedLocation}
+        setShowSidebar={setShowSidebar}
       />
-      <Sidebar setSelected={setShowSidebar}
-               selectedLocationId={selectedLocation}
-               observationLocations={observationLocations}
+      <Sidebar 
+        setSelected={setShowSidebar}
+        selectedLocationId={selectedLocation}
+        observationLocations={observationLocations}
       />
     </div>
   );
