@@ -2,7 +2,7 @@ import React from 'react';
 import {Marker, Popup} from 'react-leaflet';
 
 const GeoMarker = ({loc, setSelectedLocation, setShowSidebar}) => (
-  <Marker position={[loc.position.lon, loc.position.lat]}
+  <Marker position={[loc.position.lat, loc.position.lon]}
           onClick={() => setSelectedLocation(loc.info.id)}>
     <Popup>
       <p>{loc.info.name}, {loc.info.region}</p>

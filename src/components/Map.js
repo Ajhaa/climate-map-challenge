@@ -27,7 +27,7 @@ const Map = ({mapStyle, position, locations, setSelectedLocation, setShowSidebar
         setSelectedLocation={setSelectedLocation} 
         setShowSidebar={setShowSidebar}
       />
-    )}
+    )}  
   </MapContainer>
 );
 

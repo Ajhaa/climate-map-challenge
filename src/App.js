@@ -48,7 +48,7 @@ function App() {
 
           setObservationLocations(data.locations
             .map(loc => {
-              const [lon, lat] = loc.info.position.map(parseFloat);
+              const [lat, lon] = loc.info.position.map(parseFloat);
               return {...loc, position: {lat, lon}}
             })
           );
@@ -63,7 +63,6 @@ function App() {
   const lastThrees = observationLocations.map(l => multipleIndeces(l.data.t.timeValuePairs, 49, 25, 1).map(m => m.value));
   const max = Math.max(...lastThrees.map(l => Math.max(...l)));
   const min = Math.min(...lastThrees.map(l => Math.min(...l)));
-  console.log(lastThrees)
 
   return (
     <div className="App">
