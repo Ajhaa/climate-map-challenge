@@ -4,6 +4,7 @@ import './App.css';
 import L from "leaflet";
 import Sidebar from './components/Sidebar';
 import Map from './components/Map';
+import multipleIndeces from './utils/multipleIndeces';
 
 
 // Ugly hack to fix Leaflet icons with leaflet loaders
@@ -59,6 +60,10 @@ function App() {
   }, []);
 
   const position = [65, 26];
+  const lastThrees = observationLocations.map(l => multipleIndeces(l.data.t.timeValuePairs, 49, 25, 1).map(m => m.value));
+  const max = Math.max(...lastThrees.map(l => Math.max(...l)));
+  const min = Math.min(...lastThrees.map(l => Math.min(...l)));
+  console.log(lastThrees)
 
   return (
     <div className="App">
@@ -73,6 +78,7 @@ function App() {
         setSelected={setShowSidebar}
         selectedLocationId={selectedLocation}
         observationLocations={observationLocations}
+        extremes={{min, max}}
       />
     </div>
   );
