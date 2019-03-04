@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import Metolib from '@fmidev/metolib';
 import './App.css';
 import L from "leaflet";
 import Sidebar from './components/Sidebar';
 import Map from './components/Map';
 import multipleIndeces from './utils/multipleIndeces';
+import { setLocations } from './reducers/locationsReducer';
 
 
 // Ugly hack to fix Leaflet icons with leaflet loaders
@@ -16,17 +17,8 @@ L.Icon.Default.mergeOptions({
 });
 
 
-function App() {
-  const [observationLocations, setObservationLocations] = useState([]);
-
-  const [selectedLocation, setSelectedLocation] = useState(null);
-
-  const [showSidebar, setShowSidebar] = useState(false);
-
-  const mapStyle = {
-    width: showSidebar ? 'calc(100vw - 300px)' : '100%',
-    left: showSidebar ? '300px' : '0px'
-  };
+const App = ({store}) => {
+  const observationLocations = store.getState().locations;
 
   useEffect(function fetchObservationLocations() {
     const connection = new Metolib.WfsConnection();
@@ -46,12 +38,12 @@ function App() {
             return;
           }
 
-          setObservationLocations(data.locations
+          store.dispatch(setLocations(data.locations
             .map(loc => {
               const [lat, lon] = loc.info.position.map(parseFloat);
               return {...loc, position: {lat, lon}}
             })
-          );
+          ));
 
           connection.disconnect();
         }
@@ -67,17 +59,12 @@ function App() {
   return (
     <div className="App">
       <Map 
-        mapStyle={mapStyle}
         position={position}
-        locations={observationLocations}
-        setSelectedLocation={setSelectedLocation}
-        setShowSidebar={setShowSidebar}
+        store={store}
       />
       <Sidebar 
-        setSelected={setShowSidebar}
-        selectedLocationId={selectedLocation}
-        observationLocations={observationLocations}
         extremes={{min, max}}
+        store={store}
       />
     </div>
   );

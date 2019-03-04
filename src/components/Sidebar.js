@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from "styled-components";
 import SidebarChart from './SidebarChart';
+import { hideSidebar } from '../reducers/showSidebarReducer';
+import { changeCompared } from '../reducers/comparedReducer';
 
-function Sidebar({setSelected, selectedLocationId, observationLocations, extremes}) {
-    const id = selectedLocationId;
+function Sidebar({ extremes, store }) {
+    const { selected, locations } = store.getState();
 
-    const loc = observationLocations.find(loc => loc.info.id === id);
+    const loc = locations.find(loc => loc.info.id === selected);
 
     if (!loc) {
         return <div></div>;
@@ -22,10 +24,12 @@ function Sidebar({setSelected, selectedLocationId, observationLocations, extreme
     })
 
     return <div>
-        <button onClick={() => setSelected(false)}>close</button>
+        <button onClick={() => store.dispatch(hideSidebar())}>close</button>
         <pre>{loc && JSON.stringify(loc.info, null, 4)}</pre>
         
         <h4 style={{margin: '30px'}}>Temperatures at {temperatureData[0].time}:00</h4>
+        <button onClick={() => store.dispatch(changeCompared(-1))}>compare</button>
+        <button onClick={() => store.dispatch(changeCompared(null))}>stop comparing</button>
         <SidebarChart data={temperatureData} domain={[Math.floor(extremes.min), Math.ceil(extremes.max)]}/>
     </div>
 }
