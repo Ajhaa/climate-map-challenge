@@ -3,34 +3,28 @@ import styled from "styled-components";
 import SidebarChart from './SidebarChart';
 import { hideSidebar } from '../reducers/showSidebarReducer';
 import { changeCompared } from '../reducers/comparedReducer';
+import { lastThreeDays, compareLastThree } from '../utils/statistics';
 
-function Sidebar({ extremes, store }) {
-    const { selected, locations } = store.getState();
+
+const Sidebar = ({ extremes, store }) => {
+    const { selected, locations, compared } = store.getState();
 
     const loc = locations.find(loc => loc.info.id === selected);
+    const loc2 = locations.find(loc => loc.info.id === compared);
 
     if (!loc) {
         return <div></div>;
     }
 
-    let timeValue = loc.data.t.timeValuePairs;
-    let len = timeValue.length;
-    let temperatureData = [timeValue[len-49], timeValue[len-25], timeValue[len-1]];
-    temperatureData = temperatureData.map(t => {
-        const date = new Date(t.time);
-        const hours = date.getHours();
-        const day = `${date.getDate()}.${date.getMonth()+1}.`;
-        return {value: t.value, day, time: hours}
-    })
+    const data = loc2 ? compareLastThree(loc, loc2) : lastThreeDays(loc);
 
     return <div>
         <button onClick={() => store.dispatch(hideSidebar())}>close</button>
-        <pre>{loc && JSON.stringify(loc.info, null, 4)}</pre>
         
-        <h4 style={{margin: '30px'}}>Temperatures at {temperatureData[0].time}:00</h4>
-        <button onClick={() => store.dispatch(changeCompared(-1))}>compare</button>
-        <button onClick={() => store.dispatch(changeCompared(null))}>stop comparing</button>
-        <SidebarChart data={temperatureData} domain={[Math.floor(extremes.min), Math.ceil(extremes.max)]}/>
+        <h4 style={{margin: '30px'}}>Temperatures at {data.data[0].time}:00</h4>
+        {!compared ? <button onClick={() => store.dispatch(changeCompared(-1))}>compare</button> :
+                     <button onClick={() => store.dispatch(changeCompared(null))}>stop comparing</button>}
+        <SidebarChart data={data} domain={[Math.floor(extremes.min), Math.ceil(extremes.max)]} store={store}/>
     </div>
 }
 

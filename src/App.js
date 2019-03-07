@@ -20,6 +20,11 @@ L.Icon.Default.mergeOptions({
 const App = ({store}) => {
   const observationLocations = store.getState().locations;
 
+  const { selected, compared } = store.getState();
+  if (compared && compared >= 0) {
+    console.log("Comparing " + selected + " and " + compared);
+  }
+
   useEffect(function fetchObservationLocations() {
     const connection = new Metolib.WfsConnection();
     if (connection.connect('http://opendata.fmi.fi/wfs', 'fmi::observations::weather::cities::multipointcoverage')) {
@@ -41,7 +46,8 @@ const App = ({store}) => {
           store.dispatch(setLocations(data.locations
             .map(loc => {
               const [lat, lon] = loc.info.position.map(parseFloat);
-              return {...loc, position: {lat, lon}}
+              const temperature = loc.data.t.timeValuePairs[loc.data.t.timeValuePairs.length - 1].value;
+              return {...loc, position: {lat, lon}, temperature}
             })
           ));
 
@@ -52,7 +58,7 @@ const App = ({store}) => {
   }, []);
 
   const position = [65, 26];
-  const lastThrees = observationLocations.map(l => multipleIndeces(l.data.t.timeValuePairs, 49, 25, 1).map(m => m.value));
+  const lastThrees = observationLocations.map(l => multipleIndeces(l.data.t.timeValuePairs, 49, 25, 1).map(m => m.value).filter(v => !isNaN(v)));
   const max = Math.max(...lastThrees.map(l => Math.max(...l)));
   const min = Math.min(...lastThrees.map(l => Math.min(...l)));
 
